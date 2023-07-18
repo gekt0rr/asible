@@ -28,12 +28,12 @@
 
     - name: set hostname
       hostname:
-        name: ipa-server.305-lab.local
+        name: ipa-server.lab.local
     
     - name: Add FQDN to /etc/hosts
       lineinfile:
         path: /etc/hosts
-        line: "10.203.0.239 ipa-server.305-lab.local ipa-server"
+        line: "10.10.10.10 ipa-server.lab.local ipa-server"
         state: present
     
     - name: Set timezone.
@@ -56,9 +56,9 @@
         conn_name: ens192 
         type: ethernet
         ifname: ens192 
-        ip4: 10.203.0.239/24
-        gw4: 10.203.0.1
+        ip4: 10.10.10.10/24
+        gw4: 10.10.10.1
         state: present
         autoconnect: yes
-        dns4: 10.203.0.68 10.203.0.1
-        dns4_search: 305-lab.local
+        dns4: 8.8.8.8 8.8.4.4
+        dns4_search: lab.local
