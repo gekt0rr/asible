@@ -1,0 +1,64 @@
+- name: FreeIPA Installation on CentOS 9
+  hosts: ipa-servers
+  become: true
+
+  tasks:
+    
+  # пользователь должен быть в группе wheel (usermod -aG wheel user)
+  # dnf update and upgrade
+
+    - name: Update packages
+      dnf:
+        state: latest
+
+    - name: Clean Package Cache
+      dnf:
+        autoremove: true
+      
+    - name: Check if reboot is needed
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_needed
+      ignore_errors: True
+
+    - name: Reboot if needed
+      reboot:
+        reboot_timeout: 300
+      when: reboot_needed.stat.exists == True
+
+    - name: set hostname
+      hostname:
+        name: ipa-server.305-lab.local
+    
+    - name: Add FQDN to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "10.203.0.239 ipa-server.305-lab.local ipa-server"
+        state: present
+    
+    - name: Set timezone.
+      timezone:
+        name: Europe/Moscow
+
+    - name: Install Chrony
+      dnf:
+        name: chrony
+        state: latest
+
+    - name: Start Chrony
+      service:
+        name: chronyd
+        state: started
+        enabled: yes
+
+    - name: set static IP address
+      nmcli:
+        conn_name: ens192 
+        type: ethernet
+        ifname: ens192 
+        ip4: 10.203.0.239/24
+        gw4: 10.203.0.1
+        state: present
+        autoconnect: yes
+        dns4: 10.203.0.68 10.203.0.1
+        dns4_search: 305-lab.local

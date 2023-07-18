@@ -1,0 +1,49 @@
+- name: Создание обычных пользователей и груп
+  become: true
+  hosts: ipa-servers
+
+  tasks:
+
+  - name: Создание пользователей в дефолтной группе ipausers
+    community.general.ipa_user:
+      name: "{{ item }}"
+      givenname: "{{ item.split('.')[0] }}"
+      sn: "{{ item.split('.')[1] }}"
+      password: "FkWTYdpBda"
+      state: present
+      ipa_user: admin
+      ipa_pass: Qwerty@123
+      ipa_host: ipa-server.305-lab.local
+    with_items:
+
+    # мониторинг
+      - ks.pronin
+      - ai.habas
+      - as.metelkov
+      - ii.karavaev
+      - aa.grishin
+      - ya.maslova
+      - kg.kislov
+      - dn.belykh
+      - id.talanov
+
+    # маркетирг
+    
+
+  # - name: Add users to admins group
+  #   community.general.ipa_group:
+  #     name: <ГРУППА>
+  #     state: present
+  #     ipa_user: admin
+  #     ipa_pass: Qwerty@123
+  #     ipa_host: ipa-server.305-lab.local
+  #     user:
+  #       - Pronin_KS
+  #       - Habas_AI
+  #       - Metelkov_AS
+  #       - Karavaev_II
+  #       - Grishin_AA
+  #       - Maslova_YA
+  #       - Kislov_KG
+  #       - Belykh_DN
+  #       - Talanov_ID

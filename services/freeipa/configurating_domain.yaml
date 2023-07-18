@@ -1,0 +1,42 @@
+- name: Базовые настройки FreeIPA
+  hosts: ipa-servers
+  become: true
+
+  tasks:
+
+  - name: Password policy # делаем пароль вечным, откючаем необходимость смены пароля через 90 дней
+    community.general.ipa_pwpolicy:
+      maxpwdlife: 0
+      ipa_user: admin
+      ipa_pass: Qwerty@123
+      ipa_host: ipa-server.305-lab.local
+
+  - name: Создаем пользователей в FreeIPA
+    community.general.ipa_user:
+      name: "{{ item }}"
+      givenname: "{{ item.split('.')[0] }}"
+      sn: "{{ item.split('.')[1] }}"
+      password: "Qwerty@123"
+      state: present
+      ipa_user: admin
+      ipa_pass: Qwerty@123
+      ipa_host: ipa-server.305-lab.local
+    with_items:
+      - a.basov
+      - m.krivov
+      - a.trofimov
+      - v.michailov
+
+  - name: Add users to admins group
+    community.general.ipa_group:
+      name: admins
+      state: present
+      ipa_user: admin
+      ipa_pass: Qwerty@123
+      ipa_host: ipa-server.305-lab.local
+      user:
+        - admin
+        - a.basov
+        - m.krivov
+        - a.trofimov
+        - v.michailov

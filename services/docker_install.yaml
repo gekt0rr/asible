@@ -1,0 +1,49 @@
+- name: Установка Docker без docker-compose
+  hosts: all
+  become: true
+  tasks:
+  
+  - name: Загрузить скрипт установки Docker
+    shell: "curl -fsSl https://get.docker.com -o /tmp/get-docker.sh"
+
+  - name: Выполнить скрипт установки Docker
+    shell: "sh /tmp/get-docker.sh"
+
+  - name: Добавить необходимые дополнения
+    #  apt install python3-pip -y
+    #  pip3 install docker-compose
+    apt:
+      name: 
+      - python3-pip
+      - python3-virtualenv
+      - python3-setuptools
+      - python3-docker
+      state: present
+
+  - name: Создаем контецнер portainer 
+    docker_container:
+      name: portainer
+      image: portainer/portainer
+      restart_policy: always
+      ports:
+        - "8000:8000"
+        - "9443:9443"
+
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - portainer_data:/data
+      # networks:
+      #   - net
+  - name: Создаем контецнер portainer agent
+     # sudo docker run -d   -p 9001:9001   --name portainer_agent   --restart=always   -v /var/run/docker.sock:/var/run/docker.sock   -v /var/lib/docker/volumes:/var/lib/docker/volumes   portainer/agent:2.18.1
+    docker_container:
+      name: portainer_agent
+      image: portainer/agent
+      restart_policy: always
+      ports:
+        - "9001:9001"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /var/lib/docker/volumes:/var/lib/docker/volumes
+      # networks:
+      #   - net

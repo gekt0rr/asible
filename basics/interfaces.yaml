@@ -1,0 +1,10 @@
+- name: /etc/network/interfaces configure
+  hosts: #all
+  become: true
+
+  tasks:
+  - name: set static IP address
+    replace:
+      path: /etc/network/interfaces
+      regexp: '(iface ens32 inet )(dhcp|manual)'
+      replace: '\1static\n    address 10.203.0.84\n    netmask 255.255.255.0\n    gateway 10.203.0.1\n    dns-nameservers 10.203.0.68 10.203.0.1\n'

@@ -1,0 +1,17 @@
+---
+- name: Update System Packages
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: Update Package Cache
+    apt:
+      update_cache: yes
+
+  - name: Upgrade Packages
+    apt:
+      upgrade: dist
+
+  - name: Clean Package Cache
+    apt:
+      autoclean: yes

@@ -1,0 +1,20 @@
+- name: NTP configure
+  hosts: all
+  become: true
+
+  tasks:
+    
+    - name: Set timezone.
+      timezone:
+        name: Europe/Moscow
+
+    - name: Install NTP
+      apt:
+        name: ntp
+        state: latest
+
+    - name: Start NTP
+      service:
+        name: ntp
+        state: started
+        enabled: yes

@@ -1,0 +1,9 @@
+- name: Обновление локальной копии репозитория https://gitlab.305-lab.duckdns.org/a.basov/wiki
+  hosts: all
+  tasks:
+
+    - name: Запуск команды git pull
+      command: git pull
+      args:
+        chdir: /home/user/perlit/Perlite/perlite/Demo/wiki
+      become: true

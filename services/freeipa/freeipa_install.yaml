@@ -1,0 +1,131 @@
+---
+- name: FreeIPA Installation on CentOS 9
+  hosts: ipa-servers
+  become: true
+
+  tasks:
+    
+  # пользователь должен быть в группе wheel (usermod -aG wheel user)
+  # dnf update and upgrade
+
+    - name: Update packages
+      dnf:
+        state: latest
+
+    - name: Clean Package Cache
+      dnf:
+        autoremove: true
+      
+    - name: Check if reboot is needed
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_needed
+      ignore_errors: True
+
+    - name: Reboot if needed
+      reboot:
+        reboot_timeout: 300
+      when: reboot_needed.stat.exists == True
+
+
+      # centos 9 preconfiguration
+
+    - name: set hostname
+      hostname:
+        name: ipa-server.305-lab.local
+    
+    - name: Add FQDN to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "10.203.0.239 ipa-server.305-lab.local ipa-server"
+        state: present
+    
+    - name: Set timezone.
+      timezone:
+        name: Europe/Moscow
+
+    - name: Install Chrony
+      dnf:
+        name: chrony
+        state: latest
+
+    - name: Start Chrony
+      service:
+        name: chronyd
+        state: started
+        enabled: yes
+
+
+
+    - name: Install FreeIPA server packages
+      dnf:
+        name:
+          - freeipa-server
+          - freeipa-server-dns
+          - freeipa-server-trust-ad
+        state: latest
+
+    - name: FreeIPA configure
+      command: 
+        ipa-server-install 
+        --setup-dns 
+        --auto-forwarders 
+        --forward-policy=only 
+        --no-ntp 
+        --hostname=ipa-server.305-lab.local 
+        --ip-address=10.203.0.239
+        --domain=305-lab.local
+        --realm=305-LAB.LOCAL
+        --ds-password=Qwerty@123
+        --admin-password=Qwerty@123
+        --unattended
+      args: # проверка наличия файла /etc/ipa/default.conf , если есть - не запускаем команду
+        creates: /etc/ipa/default.conf
+
+    - name: Open necessary ports in Firewall
+      firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+        immediate: true
+      with_items:
+        - 53/tcp
+        - 53/udp
+        - 80/tcp
+        - 443/tcp
+        - 88/tcp
+        - 88/udp
+        - 123/udp
+        - 389/tcp
+        - 636/tcp
+        - 464/tcp
+        - 464/udp
+
+    - name: Reload Firewall
+      systemd:
+        name: firewalld.service
+        state: restarted
+
+
+# Брандмауэр
+
+# Необходимо открыть несколько портов, которые используются службами FreeIPA:
+
+# firewall-cmd --permanent --add-port=53/{tcp,udp} --add-port={80,443}/tcp --add-port={88,464}/{tcp,udp} --add-port=123/udp --add-port={389,636}/tcp
+
+# firewall-cmd --reload
+
+
+
+  # - name: set static IP address
+    #   nmcli:
+    #     conn_name: ens192 
+    #     type: ethernet
+    #     ifname: ens192 
+    #     ip4: 10.203.0.239/24
+    #     gw4: 10.203.0.1
+    #     state: present
+    #     autoconnect: yes
+    #     dns4: 10.203.0.68 10.203.0.1
+    #     dns4_search: 305-lab.local
+        

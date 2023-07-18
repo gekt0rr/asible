@@ -1,0 +1,30 @@
+---
+- name: Install basic packages
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Update Package Cache
+    apt:
+      update_cache: yes
+
+  - name: Upgrade Packages
+    apt:
+      upgrade: dist
+
+  - name: Clean Package Cache
+    apt:
+      autoclean: yes
+
+  - name: Install basic packages
+    apt: 
+      name: 
+        - mc
+        - vim
+        - git
+        - curl
+        - wget
+        - net-tools
+        - apt-transport-https
+        - ca-certificates
+      state: latest
