@@ -5,10 +5,10 @@
   tasks:
   - name: Set static hostname
     hostname:
-      name: ipa-server.305-lab.local
+      name: ipa-server.lab.local
 
   - name: Add FQDN to /etc/hosts
     lineinfile:
       path: /etc/hosts
-      line: "10.203.0.84 ipa-server.305-lab.local ipa-server"
+      line: "10.10.10.10 ipa-server.lab.local ipa-server"
       state: present

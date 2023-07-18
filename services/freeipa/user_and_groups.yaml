@@ -12,22 +12,23 @@
       password: "FkWTYdpBda"
       state: present
       ipa_user: admin
-      ipa_pass: Qwerty@123
-      ipa_host: ipa-server.305-lab.local
+      ipa_pass: password
+      ipa_host: ipa-server.lab.local
     with_items:
 
-    # мониторинг
-      - ks.pronin
-      - ai.habas
-      - as.metelkov
-      - ii.karavaev
-      - aa.grishin
-      - ya.maslova
-      - kg.kislov
-      - dn.belykh
-      - id.talanov
+    # бухгалтерия
+      - u.user1
+      - u.user2
+      - u.user3
+      - u.user4
+      - u.user5
 
-    # маркетирг
+    # Закупки
+      - u.user6
+      - u.user7
+      - u.user8
+      - u.user9
+      - u.user10
     
 
   # - name: Add users to admins group
@@ -35,15 +36,11 @@
   #     name: <ГРУППА>
   #     state: present
   #     ipa_user: admin
-  #     ipa_pass: Qwerty@123
-  #     ipa_host: ipa-server.305-lab.local
+  #     ipa_pass: password
+  #     ipa_host: ipa-server.lab.local
   #     user:
-  #       - Pronin_KS
-  #       - Habas_AI
-  #       - Metelkov_AS
-  #       - Karavaev_II
-  #       - Grishin_AA
-  #       - Maslova_YA
-  #       - Kislov_KG
-  #       - Belykh_DN
-  #       - Talanov_ID
+          # - u.user1
+          # - u.user2
+          # - u.user3
+          # - u.user4
+          # - u.user5

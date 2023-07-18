@@ -7,4 +7,4 @@
     replace:
       path: /etc/network/interfaces
       regexp: '(iface ens32 inet )(dhcp|manual)'
-      replace: '\1static\n    address 10.203.0.84\n    netmask 255.255.255.0\n    gateway 10.203.0.1\n    dns-nameservers 10.203.0.68 10.203.0.1\n'
+      replace: '\1static\n    address 10.10.10.10\n    netmask 255.255.255.0\n    gateway 10.10.10.1\n    dns-nameservers 8.8.8.8 8.8.4.4\n'
