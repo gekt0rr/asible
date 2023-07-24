@@ -1,0 +1,43 @@
+
+- hosts: a114.rosnedra.net
+  become: yes
+  vars:
+    ansible_become_pass: "Qwerty@123"
+    home_dir: "/home/PUB.NEDRA/"
+    shortcut_path: "/opt/Armgs/armgs.desktop"
+    domain: "@PUB.NEDRA"
+
+
+  tasks:
+    - name: Create directory for Armgs
+      file:
+        path: /opt/Armgs
+        state: directory
+        mode: '0777'
+
+    - name: Download Armgs
+      get_url:
+        url: https://dl.armgs.team/downloads/linux/x64/latest/armgs.tar.xz
+        dest: /opt/Armgs/armgs_v1.tar.xz
+
+    - name: Extract Armgs
+      unarchive:
+        src: /opt/Armgs/armgs_v1.tar.xz
+        dest: /opt/Armgs
+        remote_src: yes 
+
+    - name: Create symlink for Armgs
+      file:
+        src: /opt/Armgs/armgs
+        dest: /opt/Armgs/armgs.desktop
+        state: link
+
+    - name: Copy Armgs shortcut to all users
+      shell: |
+        for user in $(ls {{ home_dir }}); do
+          cp {{ shortcut_path }} {{ home_dir }}/$user/Desktop/
+          chown $user"{{ domain }}" {{ home_dir }}/$user/Desktop/armgs.desktop
+          chgrp $user"{{ domain }}" {{ home_dir }}/$user/Desktop/armgs.desktop
+        done
+      register: result
+
